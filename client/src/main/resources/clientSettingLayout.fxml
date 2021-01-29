@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="142.0" prefWidth="247.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client">
+   <children>
+      <TextField layoutX="71.0" layoutY="21.0" />
+      <TextField layoutX="71.0" layoutY="55.0" />
+      <Label layoutX="23.0" layoutY="25.0" prefHeight="18.0" prefWidth="39.0" text="Server:" />
+      <Label layoutX="23.0" layoutY="58.0" prefHeight="18.0" prefWidth="39.0" text="User:" />
+      <ButtonBar layoutX="19.0" layoutY="93.0" prefHeight="40.0" prefWidth="204.0">
+         <buttons>
+            <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="120.0" text="Cancel" />
+            <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="108.0" text="Apply" />
+         </buttons>
+      </ButtonBar>
+   </children>
+</AnchorPane>

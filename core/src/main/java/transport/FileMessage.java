@@ -1,81 +1,95 @@
 package transport;
 
-import java.io.FileOutputStream;
+import filesystem.FileEntity;
+
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.Arrays;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 
 public class FileMessage implements Serializable {
 
-    private final String name;
+    public static final int MAX_SIZE = 32000;
+
     private final byte[] data;
-    private final LocalDate createAt;
 
-    private int partLength = 0;
-    private boolean end;
+    private FileEntity fileEntity;
+    private int partId = 0;
+    private int partsTotal = 1;
 
-    public FileMessage(Path path) throws IOException {
-        if (!Files.exists(path)) throw new IOException(String.format("File does not exist: %s", path.toAbsolutePath()));
-        name = path.getFileName().toString();
-        data = Files.readAllBytes(path);
-        createAt = LocalDate.now();
+    public int getPartId() {
+        return partId;
     }
 
-    public int getPartLength() {
-        return partLength;
+    public int getPartsTotal() {
+        return partsTotal;
     }
 
-    public void setPartLength(int partLength) {
-        this.partLength = partLength;
+    public String getFileName() {
+        return fileEntity.getFileName();
     }
 
-//    public int getPartsNumber() {
-//        return (partLength == 0) ? 1 : getData().length % partLength + 1;
-//    }
-
-//    public byte[] getPart(int part) {
-//        byte[] bytePart;
-//        int partLength = getPartLength();
-//        int from = part * partLength;
-//        int len = from + partLength;
-//        if (from + len >= getData().length) len = getData().length;
-//        System.arraycopy(getData(), from, bytePart, 0, len - );
-//    }
-
-    public boolean isEnd() {
-        return end;
+    private int calcPartsTotal() {
+        return (int) Math.ceil(data.length / MAX_SIZE);
     }
 
-    public boolean saveFile(String fileName) throws IOException {
-        FileOutputStream writer = new FileOutputStream(fileName);
-        writer.write(getData());
-        writer.flush();
-        writer.close();
-        return true;
+    public Path getPath() {
+        return fileEntity.getPath();
     }
 
-    public String getName() {
-        return name;
+    public void setStringPath(String path) {
+        fileEntity.setStringPath(path);
+    }
+
+    public String getHash() {
+        return fileEntity.getHash();
     }
 
     public byte[] getData() {
         return data;
     }
 
-    public LocalDate getCreateAt() {
-        return createAt;
+    public FileMessage getPart(int partId) throws IOException {
+        if (partId > partsTotal) throw new IOException(
+                String.format("Invalid file part index: %d expected 0-%d", partId, partsTotal - 1));
+        return new FileMessage(
+                fileEntity,
+                Arrays.copyOfRange(data, partId * MAX_SIZE, (partId + 1) * MAX_SIZE),
+                partId,
+                partsTotal);
+    }
+
+    public boolean saveFile(Path filePath) throws IOException {
+        if (partId == 0)
+            Files.write(filePath, getData(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        else
+            Files.write(filePath, getData(), StandardOpenOption.APPEND);
+        return true;
     }
 
     @Override
     public String toString() {
-        return "FileMessage{" +
-                "name='" + name + '\'' +
-                ", data=" + Arrays.toString(data) +
-                ", createAt=" + createAt +
-                '}';
+        return "FileMessage{" + "name=\'" + getFileName() + "\'" + (
+                (getPartsTotal() > 1)? String.format(" (%d/%d)", getPartId() + 1, getPartsTotal()):"") + "}";
+    }
+
+    public FileMessage(Path path) throws IOException {
+        if (!Files.exists(path)) throw new IOException(String.format("File does not exist: %s", path.toAbsolutePath()));
+        this.fileEntity = new FileEntity(path);
+        this.data = Files.readAllBytes(path);
+        this.partsTotal = calcPartsTotal();
+    }
+
+    public FileMessage(FileEntity fileEntity, byte[] data, int partId, int parts) throws IOException {
+        this.fileEntity = fileEntity;
+        this.data = data;
+        this.partId = partId;
+        this.partsTotal = parts;
     }
 
 }
+
+
+

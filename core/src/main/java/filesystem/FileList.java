@@ -1,9 +1,5 @@
 package filesystem;
 
-import transport.Envelope;
-import transport.Message;
-import transport.MessageType;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -13,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FileList implements Serializable {
+public class FileList implements Serializable, Cloneable {
 
-    Path root;
+    private transient Path root;
 
     public ArrayList<FileEntity> fileList = new ArrayList<>();
 
@@ -57,7 +53,11 @@ public class FileList implements Serializable {
     }
 
     public FileList(String directoryPath) throws IOException {
-        setRoot(Paths.get(directoryPath));
+        this(Paths.get(directoryPath));
+    }
+
+    public FileList(Path directoryPath) throws IOException {
+        setRoot(directoryPath);
     }
 
     public String getContent() {
@@ -65,7 +65,8 @@ public class FileList implements Serializable {
         fileList.forEach(file -> {
             list.append("," + file);
         });
-        return (list.deleteCharAt(0).toString());
+        if (list.length() > 0) list.deleteCharAt(0).toString();
+        return list.toString();
     }
 
     @Override
@@ -82,15 +83,5 @@ public class FileList implements Serializable {
             FileHelper.createDirectoryIfNotExists(fs.getPath(i), Paths.get("sync\\server"));
         }
 
-        // проверка существования файла
-        int size = fs.getFileList().size();
-        System.out.println(new Envelope("test_user", new Message(fs, MessageType.FILE_LIST)));
-        for (int i = 0; i < fs.getFileList().size(); i++) {
-            Path path = Paths.get("sync\\server").resolve(fs.getPath(i));
-            if (FileHelper.fileExists(path))
-                System.out.printf("Path: %s hash: %s%n", path, new FileEntity(path).getHash());
-            if(FileHelper.fileEntityEquals(fs.get(i), path)) fs.remove(i);
-        }
-        System.out.println(new Envelope("test_user", new Message(fs, MessageType.FILE_LIST)));
     }
 }
