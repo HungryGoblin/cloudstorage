@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>cloud</artifactId>
+    <artifactId>cloudstorage</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
 
     <modules>
-        <module>server</module>
+        <module>cloudserver</module>
         <module>client</module>
         <module>core</module>
     </modules>
