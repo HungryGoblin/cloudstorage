@@ -1,5 +1,7 @@
 package filesystem;
 
+import tools.CryptoHelper;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Path;
