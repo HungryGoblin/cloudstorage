@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import transport.Container;
 import transport.FileMessage;
 import transport.MessageType;
-
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
@@ -107,7 +106,7 @@ public class ClientController implements Initializable {
     public void sendData(@NotNull Object message, MessageType messageType) throws IOException {
         if (isConnected()) {
             try {
-                Container container = new Container(ClientSetting.getUser(), message, messageType);
+                Container container = new Container(ClientSetting.getLogin(), message, messageType);
                 os.writeObject(container);
                 os.flush();
                 putLog(String.format("DATA SENT: %s", container));

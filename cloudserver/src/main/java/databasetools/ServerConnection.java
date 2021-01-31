@@ -9,13 +9,13 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.Arrays;
 
-public class Connection implements Closeable {
+public class ServerConnection implements Closeable {
 
     private static final String DB_URL = "jdbc:postgresql://localhost:5432";
     private static final String LOGIN = "postgres";
     private static final String PASSWORD = "Aviks131";
 
-    private static final Logger LOG = LoggerFactory.getLogger(Connection.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ServerConnection.class);
 
     private java.sql.Connection connection;
     private Statement statement;
@@ -29,8 +29,8 @@ public class Connection implements Closeable {
         return isConnected();
     }
 
-    public static Connection createConnection() throws SQLException {
-        return new Connection();
+    public static ServerConnection createConnection() throws SQLException {
+        return new ServerConnection();
     }
 
     public Statement getStatement() throws SQLException {
@@ -38,7 +38,7 @@ public class Connection implements Closeable {
         return statement;
     }
 
-    public Connection() throws SQLException {
+    public ServerConnection() throws SQLException {
         connect();
         statement = connection.createStatement();
     }
@@ -50,7 +50,7 @@ public class Connection implements Closeable {
         return resultSet.next();
     }
 
-    public boolean userLogin(String login, String password) throws SQLException {
+    public boolean loginUser(String login, String password) throws SQLException {
         Statement statement = getStatement();
         ResultSet resultSet = statement.executeQuery(String.format(
                 "SELECT FROM _user WHERE _user.login = '%s' AND _user.password = '%s' LIMIT 1",
@@ -71,10 +71,10 @@ public class Connection implements Closeable {
     public static void main(String[] args) {
 
         try {
-            Connection connection = new Connection();
+            ServerConnection serverConnection = new ServerConnection();
             //connection.createUser("sozykin", "130161", "Andrey Goblin");
-            System.out.println(connection.userLogin("sozykin", "123"));
-            System.out.println(connection.userLogin("sozykin", "130161"));
+            System.out.println(serverConnection.loginUser("sozykin", "123"));
+            System.out.println(serverConnection.loginUser("sozykin", "130161"));
         } catch (SQLException e) {
             e.printStackTrace();
             LOG.error(e.getMessage() + " " + e.getSQLState() + " " + Arrays.toString(e.getStackTrace()));
