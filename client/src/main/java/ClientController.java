@@ -36,7 +36,7 @@ public class ClientController implements Initializable {
         return (socket != null && socket.isConnected());
     }
 
-    public void clearLog(ActionEvent event) throws IOException {
+    public void clearLog(ActionEvent event) {
         logArea.clear();
     }
 
@@ -47,7 +47,8 @@ public class ClientController implements Initializable {
 
     public void updateFiles(ListView listView, FileList fileList) {
         listView.getItems().clear();
-        listView.getItems().addAll(fileList.getFileList());
+        if (fileList.size() > 0)
+            listView.getItems().addAll(fileList.getFileList());
     }
 
     public void connect() {
@@ -63,11 +64,13 @@ public class ClientController implements Initializable {
         } catch (Exception e) {
             errorMessage = e.getMessage();
         }
+
         putLog(String.format("CONNECT: Cloud storage %s:%d %s",
                 ClientSetting.getHost(),
                 ClientSetting.getPort(),
                 isConnected() ? "connected" : "not connected " + errorMessage));
         readServerData();
+
     }
 
     public void sendFile(Path filePath) {
@@ -97,13 +100,13 @@ public class ClientController implements Initializable {
         MessageType messageType = container.getMessageType();
         if (messageType == MessageType.FILE_LIST) {
             FileList fileList = (FileList) container.getMessage();
-            updateFiles (serverFiles, fileList);
+            updateFiles(serverFiles, fileList);
             fileList.setRoot(ClientSetting.getSyncPath());
             fileList.getFileList().forEach(fileEntity -> sendFile(fileEntity.getPath()));
         }
     }
 
-    public void sendData(@NotNull Object message, MessageType messageType) throws IOException {
+    public void sendData(@NotNull Object message, MessageType messageType) {
         if (isConnected()) {
             try {
                 Container container = new Container(ClientSetting.getLogin(), message, messageType);

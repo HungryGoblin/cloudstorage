@@ -12,7 +12,7 @@ public class ServerSetting {
 
     public static final int PORT = 8189;
     public static final String NAME = "Skynet";
-    private static final String DEF_SYNC_DIR = "server\\src\\main\\resources\\Sync";
+    private static final String DEF_SYNC_DIR = "cloudserver\\src\\main\\resources\\Sync";
     private static final Logger LOG = LoggerFactory.getLogger(ServerSetting.class);
 
     private static Path syncPath;

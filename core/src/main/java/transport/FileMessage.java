@@ -17,7 +17,7 @@ public class FileMessage implements Serializable {
 
     private FileEntity fileEntity;
     private int partId = 0;
-    private int partsTotal = 1;
+    private int partsTotal;
 
     public int getPartId() {
         return partId;
@@ -32,7 +32,9 @@ public class FileMessage implements Serializable {
     }
 
     private int calcPartsTotal() {
-        return (int) Math.ceil(data.length / MAX_SIZE);
+        this.partsTotal = data.length > 0 ?
+                (int) Math.ceil(data.length / MAX_SIZE) + (data.length % MAX_SIZE > 0? 1: 0): 1;
+        return partsTotal;
     }
 
     public Path getPath() {
@@ -71,7 +73,7 @@ public class FileMessage implements Serializable {
 
     @Override
     public String toString() {
-        return "FileMessage{" + "name=\'" + getFileName() + "\'" + (
+        return "FileMessage{" + "name='" + getFileName() + "'" + (
                 (getPartsTotal() > 1)? String.format(" (%d/%d)", getPartId() + 1, getPartsTotal()):"") + "}";
     }
 
@@ -82,7 +84,7 @@ public class FileMessage implements Serializable {
         this.partsTotal = calcPartsTotal();
     }
 
-    public FileMessage(FileEntity fileEntity, byte[] data, int partId, int parts) throws IOException {
+    public FileMessage(FileEntity fileEntity, byte[] data, int partId, int parts) {
         this.fileEntity = fileEntity;
         this.data = data;
         this.partId = partId;

@@ -27,17 +27,26 @@ public class SignUpSceneController implements Initializable {
     private static final Logger LOG = LoggerFactory.getLogger(SignInSceneController.class);
 
     public void signUpUser() {
-        if (name.getText().isEmpty())
+        if (name.getText().isEmpty()) {
             SceneController.showAlert("Name cannot be empty", "Error", Alert.AlertType.ERROR);
-        if (login.getText().isEmpty())
+            return;
+        }
+        if (login.getText().isEmpty()) {
             SceneController.showAlert("Login cannot be empty", "Error", Alert.AlertType.ERROR);
-        if (!password.getText().equals(password1.getText()))
+            return;
+        }
+        if (!password.getText().equals(password1.getText())) {
             SceneController.showAlert("Passwords do not match", "Error", Alert.AlertType.ERROR);
+            return;
+        }
         try {
             ServerConnection.createConnection().createUser(login.getText(), password.getText(), name.getText());
         } catch (SQLException e) {
             SceneController.showAlert(e.getMessage(), "Error", Alert.AlertType.ERROR);
+            return;
         }
+        SceneController.showAlert(String.format("User %s has registered successfully", login.getText()),
+                "INFORMATION", Alert.AlertType.INFORMATION);
         SceneController.setScene(0);
     }
 

@@ -29,7 +29,7 @@ public class CloudServer {
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(SocketChannel channel) throws Exception {
+                        protected void initChannel(SocketChannel channel) {
                             channel.pipeline().addLast(
                                     new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
@@ -40,13 +40,13 @@ public class CloudServer {
             LOG.info(String.format("server started on PORT = %d", ServerSetting.PORT));
             future.channel().closeFuture().sync();
         } catch (Exception e) {
-            LOG.error("**ERROR ", e);
+            LOG.error("ERROR: ", e);
         }
     }
 
     public static void main(String[] args) {
         try {
-            CloudServer ns = new CloudServer();
+            new CloudServer();
         } catch (Exception e) {
             e.printStackTrace();
         }

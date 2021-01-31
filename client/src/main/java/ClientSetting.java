@@ -28,7 +28,6 @@ public class ClientSetting {
     public static void setSyncPath(Path syncPath) throws IOException {
         ClientSetting.syncPath = syncPath;
         FileHelper.createDirectoryIfNotExists(ClientSetting.syncPath);
-        LOG.info("path = ", ClientSetting.syncPath.toString());
     }
 
     public static String getHost() {
@@ -68,7 +67,7 @@ public class ClientSetting {
         try {
             setSyncPath(syncPath);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("ERROR: " + e.getMessage());
         }
     }
 
