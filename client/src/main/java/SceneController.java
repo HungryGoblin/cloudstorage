@@ -36,6 +36,7 @@ public class SceneController {
             addScene(FXMLLoader.load(getClass().getResource("signInLayout.fxml")));
             addScene(FXMLLoader.load(getClass().getResource("signUpLayout.fxml")));
             addScene(FXMLLoader.load(getClass().getResource("clientLayout.fxml")));
+            addScene(FXMLLoader.load(getClass().getResource("commandLayout.fxml")));
         } catch (IOException e) {
             e.printStackTrace();
         }

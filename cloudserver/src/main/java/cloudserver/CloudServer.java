@@ -14,6 +14,8 @@ import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 public class CloudServer {
 
     private static final Logger LOG = LoggerFactory.getLogger(CloudServer.class);
@@ -29,7 +31,7 @@ public class CloudServer {
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(SocketChannel channel) {
+                        protected void initChannel(SocketChannel channel) throws IOException {
                             channel.pipeline().addLast(
                                     new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
