@@ -19,6 +19,11 @@ public class DataHandler extends ChannelInboundHandlerAdapter {
     private static int cnt = 0;
     private static String name;
 
+    private CommandProcessor commandProcessor = new CommandProcessor(ServerSetting.getSyncPath());
+
+    public DataHandler() throws IOException {
+    }
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         clients.add(ctx);
@@ -58,6 +63,10 @@ public class DataHandler extends ChannelInboundHandlerAdapter {
             } else if (container.getMessageType() == MessageType.FILE) {
                 FileMessage fileMessage = (FileMessage) container.getMessage();
                 createFile(fileMessage);
+            } else if (container.getMessageType() == MessageType.COMMAND) {
+                String response;
+                response = commandProcessor.call(container.getMessage().toString());
+                container = new Container(ServerSetting.NAME, response, MessageType.MESSAGE);
             } else {
                 container = new Container(ServerSetting.NAME, "DATA RECEIVED");
             }

@@ -1,5 +1,7 @@
 package cloudserver;
 
+import filesystem.FileHelper;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -60,10 +62,14 @@ public class CommandProcessor {
         System.out.printf("COMMAND: %s%n", command);
         try {
             if (command.equalsIgnoreCase(Command.LS.name())) result = callLs();
-            else if (command.equalsIgnoreCase(Command.MKDIR.name())) result = callMkDir(argument[1]);
-            else if (command.equalsIgnoreCase(Command.TOUCH.name())) result = callTouch(argument[1]);
-            else if (command.equalsIgnoreCase(Command.RM.name())) result = callRm(argument[1]);
-            else if (command.equalsIgnoreCase(Command.CAT.name())) result = callCat(argument[1]);
+            else if (command.equalsIgnoreCase(Command.MKDIR.name()))
+                result = callMkDir(argument[1]);
+            else if (command.equalsIgnoreCase(Command.TOUCH.name()))
+                result = callTouch(argument[1]);
+            else if (command.equalsIgnoreCase(Command.RM.name()))
+                result = callRm(argument[1]);
+            else if (command.equalsIgnoreCase(Command.CAT.name()))
+                result = callCat(argument[1]);
             else if (command.equalsIgnoreCase(Command.CD.name()))
                 result = callCd(argument.length >= 2 ? argument[1] : null);
             else {
@@ -77,11 +83,11 @@ public class CommandProcessor {
     }
 
     public boolean directoryExists(Path path) {
-        return Files.exists(path) && Files.isDirectory(path);
+        return FileHelper.directoryExists(path);
     }
 
-    public boolean fileExists(Path path) {
-        return Files.exists(path) && !Files.isDirectory(path);
+    public boolean fileExists(Path path) throws IOException {
+        return FileHelper.fileExists(path);
     }
 
     public Path getRelativeToRootPath(Path path) {

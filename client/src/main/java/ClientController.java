@@ -3,6 +3,7 @@ import filesystem.FileHelper;
 import filesystem.FileList;
 import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import transport.Container;
 import transport.FileMessage;
 import transport.MessageType;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
@@ -37,18 +39,37 @@ public class ClientController implements Initializable {
     }
 
     public void clearLog(ActionEvent event) {
-        logArea.clear();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                logArea.clear();
+            }
+        });
     }
 
     public void putLog(String message) {
-        logArea.appendText(message + "\r\n");
-        LOG.info(message);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                logArea.appendText(message + "\r\n");
+                LOG.info(message);
+            }
+        });
     }
 
     public void updateFiles(ListView listView, FileList fileList) {
-        listView.getItems().clear();
-        if (fileList.size() > 0)
-            listView.getItems().addAll(fileList.getFileList());
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                listView.getItems().
+
+                        clear();
+                if (fileList.size() > 0)
+                    listView.getItems().
+
+                            addAll(fileList.getFileList());
+            }
+        });
     }
 
     public void connect() {
@@ -93,6 +114,14 @@ public class ClientController implements Initializable {
             FileList fileList = new FileList(ClientSetting.getSyncPath());
             updateFiles(clientFiles, fileList);
             sendData(fileList, MessageType.FILE_LIST);
+        }
+    }
+
+    public void showCommandScene() throws IOException {
+        if (isConnected()) {
+            if (CommandSceneController.getClientController() == null)
+                CommandSceneController.setClientController(this);
+            SceneController.setScene(3);
         }
     }
 
